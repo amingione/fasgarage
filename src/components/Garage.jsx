@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from './Button.jsx';
 import GaugeLoader from './GaugeLoader.jsx';
 
-export default function GarageLogin() {
+export default function Garage() {
   const [showLoader, setShowLoader] = useState(false);
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setShowLoader(true);
     setTimeout(() => {
-      window.location.href = "/garage-dashboard";
+      navigate("/garage");
     }, 1000);
   };
 
