@@ -1,11 +1,12 @@
+// src/lib/sanityServerClient.js
 import { createClient } from '@sanity/client';
 
-const sanity = createClient({
+const sanityServer = createClient({
   projectId: process.env.REACT_APP_SANITY_PROJECT_ID,
   dataset: process.env.REACT_APP_SANITY_DATASET,
   apiVersion: '2023-01-01',
-  useCdn: true, // read-only, safe for frontend
-  // ✅ DO NOT include token in this client
+  useCdn: false,
+  token: process.env.REACT_APP_SANITY_TOKEN,
 });
 
-export default sanity;
+export default sanityServer;

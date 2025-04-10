@@ -5,8 +5,7 @@ const sanity = createClient({
   projectId: 'r4og35qd',
   dataset: 'production',
   apiVersion: '2023-01-01',
-  token: import.meta.env.PUBLIC_SANITY_WRITE_TOKEN,
-  useCdn: false,
+  useCdn: true, // Safe for browser use
 });
 
 export default function BuildComponent({ onSubmit }) {

@@ -1,22 +1,40 @@
 import React from 'react';
 
 export default function BuildVisualizer({ vehicle }) {
-  // Define a default or fallback URL for the iframe
-  const modelUrl = vehicle ? `https://my.spline.design/${vehicle}-model-id/embed` : "https://my.spline.design/default-model-id/embed";
+  const modelUrl = vehicle
+    ? `https://my.spline.design/${vehicle}-model-id/embed`
+    : 'https://my.spline.design/default-model-id/embed';
 
   return (
-    <div className="w-full h-[300px] bg-black bg-opacity-20 rounded-xl flex items-center justify-center text-white">
-      <div className="flex flex-col items-center">
-        {/* Spline 3D Model Embed */}
-        <iframe
-          src={modelUrl} // Use the dynamic model URL
-          frameBorder="0"
-          width="100%"
-          height="300px"
-          allow="autoplay; fullscreen"
-        />
-        <p className="text-xl mt-4">Visualizer coming soon for the selected model.</p>
+    <section className="w-full bg-gradient-to-b from-black to-gray-900 text-white py-12 px-4 rounded-xl shadow-xl border border-white/10">
+      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-accent font-borg mb-6 drop-shadow">
+          Build Visualizer
+        </h2>
+
+        <div className="relative w-full max-w-5xl rounded-xl overflow-hidden shadow-2xl border border-white/20 bg-black/30 backdrop-blur-md">
+          <iframe
+            src={modelUrl}
+            frameBorder="0"
+            width="100%"
+            height="500px"
+            className="w-full h-[500px] rounded-xl transition-all duration-300"
+            allow="autoplay; fullscreen"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none">
+            <p className="text-gray-300 text-lg animate-pulse font-cyber">
+              {vehicle
+                ? `Rendering ${vehicle} configuration...`
+                : 'Loading visualizer...'}
+            </p>
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-500 mt-6 italic font-cyber">
+          Real-time 3D build viewer powered by Spline — performance packages coming soon.
+        </p>
       </div>
-    </div>
+    </section>
   );
 }

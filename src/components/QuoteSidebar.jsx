@@ -8,91 +8,94 @@ export default function QuoteSidebar({ selectedHP = 700 }) {
   const [carModel, setCarModel] = useState('Charger');
 
   useEffect(() => {
-    // Example pricing logic: $50 per HP over 600
     const basePrice = 2000;
     const additional = Math.max(0, selectedHP - 600) * 50;
     setPrice(basePrice + additional);
   }, [selectedHP]);
 
+  const handleSubmit = async () => {
+    const quote = {
+      _type: 'quote',
+      name,
+      email,
+      horsepower: selectedHP,
+      price,
+      carModel,
+    };
+
+    try {
+      await client.create(quote);
+      alert('✅ Quote submitted to FAS Motorsports!');
+    } catch (err) {
+      console.error('Sanity submit error:', err);
+      alert('❌ Error submitting your quote. Please try again.');
+    }
+  };
+
   return (
-    <aside className="bg-white bg-opacity-5 backdrop-blur-md text-white p-6 rounded-xl shadow-xl sticky top-6 space-y-6">
-      <h2 className="text-2xl font-bold">Your Build Summary</h2>
+    <aside className="bg-black/40 backdrop-blur-xl border border-white/10 text-white p-6 rounded-xl shadow-2xl sticky top-6 space-y-6 font-cyber">
+      <h2 className="text-2xl font-bold font-borg text-accent drop-shadow">Your Build Summary</h2>
 
       <div className="space-y-4">
+        {/* Name */}
         <div>
-          <label className="block text-sm mb-1">Name</label>
+          <label className="block text-sm mb-1 text-gray-300">Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-white/10 rounded p-2 text-white border border-white/20"
+            className="w-full bg-white/10 rounded px-4 py-2 text-white border border-white/20 placeholder-gray-400 focus:ring-2 focus:ring-accent outline-none"
             placeholder="John Doe"
           />
         </div>
+
+        {/* Email */}
         <div>
-          <label className="block text-sm mb-1">Email</label>
+          <label className="block text-sm mb-1 text-gray-300">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-white/10 rounded p-2 text-white border border-white/20"
+            className="w-full bg-white/10 rounded px-4 py-2 text-white border border-white/20 placeholder-gray-400 focus:ring-2 focus:ring-accent outline-none"
             placeholder="you@email.com"
           />
         </div>
+
+        {/* Car Model */}
         <div>
-          <label className="block text-sm mb-1">Car Model</label>
+          <label className="block text-sm mb-1 text-gray-300">Car Model</label>
           <select
             value={carModel}
             onChange={(e) => setCarModel(e.target.value)}
-            className="w-full bg-white/10 rounded p-2 text-white border border-white/20"
+            className="w-full bg-white/10 rounded px-4 py-2 text-white border border-white/20 focus:ring-2 focus:ring-accent outline-none"
           >
-            <option value="Charger">Charger</option>
-            <option value="Challenger">Challenger</option>
-            <option value="TRX">TRX</option>
-            <option value="Trackhawk">Trackhawk</option>
-            <option value="Durango">Durango</option>
-            <option value="Mustang">Mustang</option>
-            <option value="Raptor">Raptor</option>
-            <option value="Shelby Truck">Shelby Truck</option>
-            <option value="F150">F150</option>
-            <option value="F250">F250</option>
-            <option value="F350">F350</option>
-            <option value="F450">F450</option>
+            {[
+              'Charger', 'Challenger', 'TRX', 'Trackhawk',
+              'Durango', 'Mustang', 'Raptor', 'Shelby Truck',
+              'F150', 'F250', 'F350', 'F450'
+            ].map((model) => (
+              <option key={model} value={model}>{model}</option>
+            ))}
           </select>
         </div>
 
-        <div className="flex justify-between">
-          <span>Selected Horsepower:</span>
-          <span>{selectedHP} whp</span>
+        {/* Summary */}
+        <div className="flex justify-between text-sm mt-6">
+          <span className="text-gray-400">Selected Horsepower:</span>
+          <span className="text-accent font-bold">{selectedHP} whp</span>
         </div>
-        <div className="flex justify-between">
-          <span>Estimated Price:</span>
-          <span>${price.toLocaleString()}</span>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Estimated Price:</span>
+          <span className="text-yellow-400 font-bold">${price.toLocaleString()}</span>
         </div>
       </div>
 
+      {/* Submit Button */}
       <button
-        className="w-full bg-blue-600 hover:bg-blue-700 transition-colors py-2 px-4 rounded-lg font-semibold"
-        onClick={async () => {
-          const quote = {
-            _type: 'quote',
-            name,
-            email,
-            horsepower: selectedHP,
-            price: price,
-            carModel
-          };
-
-          try {
-            await client.create(quote);
-            alert('Quote submitted to FAS Motorsports!');
-          } catch (err) {
-            console.error('Sanity submit error:', err);
-            alert('There was an error submitting your quote. Try again.');
-          }
-        }}
+        className="w-full mt-4 bg-accent hover:bg-red-600 text-black py-3 rounded-md font-bold transition-all duration-200 shadow-md"
+        onClick={handleSubmit}
       >
-        Request My Build Quote
+        🚀 Request My Build Quote
       </button>
     </aside>
   );

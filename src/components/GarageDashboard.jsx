@@ -1,126 +1,126 @@
+import SavedBuildCard from './SavedBuildCard';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 
 const GarageDashboard = ({ savedBuilds }) => {
-  const [filtered, setFiltered] = useState(savedBuilds);
+  const safeBuilds = Array.isArray(savedBuilds) ? savedBuilds : [];
+  const [filtered, setFiltered] = useState(safeBuilds);
   const [selectedModel, setSelectedModel] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     setLoading(false);
     if (selectedModel === 'All') {
-      setFiltered(savedBuilds);
+      setFiltered(safeBuilds);
     } else {
-      setFiltered(savedBuilds.filter((b) => b.vehicleModel === selectedModel));
+      setFiltered(safeBuilds.filter((b) => b.vehicleModel === selectedModel));
     }
   }, [savedBuilds, selectedModel]);
 
-  const uniqueModels = ['All', ...new Set(savedBuilds.map((b) => b.vehicleModel))];
+  const uniqueModels = ['All', ...new Set(safeBuilds.map((b) => b.vehicleModel))];
+
+  if (!Array.isArray(savedBuilds)) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center text-gray-500 text-lg animate-pulse">
+          🔧 Loading your garage...
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div>
-        <h1>Welcome to the Garage Dashboard</h1>
-        <p>Here you can manage your builds and quotes.</p>
+    <section className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold text-accent drop-shadow mb-2 text-center font-borg">
+          Your Custom Garage
+        </h1>
+        <p className="text-gray-400 text-center mb-10 font-cyber">
+          Review, modify, or expand your builds. Welcome back.
+        </p>
+
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-semibold text-white font-cyber">
+            Filter by Vehicle Model
+          </h2>
+          <button
+            className="text-sm text-gray-400 hover:text-white border border-gray-600 px-3 py-1 rounded transition font-cyber"
+            onClick={() => setShowFilters(!showFilters)}
+            aria-label="Toggle vehicle model filter"
+          >
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </button>
+        </div>
+
+        {showFilters && (
+          <div className="flex flex-wrap justify-start gap-3 mb-10">
+            {uniqueModels.map((model) => (
+              <button
+                key={model}
+                onClick={() => setSelectedModel(model)}
+                className={`px-4 py-2 rounded-full font-semibold tracking-wide transition duration-200 font-cyber ${
+                  selectedModel === model
+                    ? 'bg-red-600 text-white shadow-md'
+                    : 'bg-gray-800 text-gray-300 hover:bg-red-700 hover:text-white'
+                }`}
+                aria-label={`Filter by ${model}`}
+              >
+                {model}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {loading ? (
+          <p className="text-center text-gray-400 text-lg animate-pulse font-cyber">Loading builds...</p>
+        ) : filtered.length === 0 ? (
+          <div className="text-center text-gray-400 text-md italic font-cyber">No builds found. Start a new one!</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filtered.map((build, index) => (
+              <SavedBuildCard
+                key={build._id || index}
+                carModel={build.vehicleModel}
+                horsepower={build.horsepower}
+                date={new Date(build.createdAt || build._createdAt || Date.now()).toLocaleDateString()}
+                status={build.status || 'Pending'}
+                price={build.price || 0}
+                modsCount={build.modList?.length || 0}
+                modList={build.modList || []}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="text-center mt-16">
+          <Link
+            to="/Build"
+            className="inline-block bg-accent hover:bg-secondary text-black font-bold px-6 py-3 rounded-md transition-all duration-200 shadow-md font-cyber"
+          >
+            + Start a New Build
+          </Link>
+        </div>
       </div>
-      <div className="mt-12">
-  <h2 className="text-3xl font-bold text-red-500 mb-6 text-center">🛠️ Your Garage Builds</h2>
-
-  <div className="flex flex-wrap justify-center gap-3 mb-8">
-    {uniqueModels.map((model) => (
-      <button
-        key={model}
-        onClick={() => setSelectedModel(model)}
-        className={`px-4 py-2 rounded-full font-semibold tracking-wide transition duration-200 ${
-          selectedModel === model
-            ? 'bg-red-600 text-white shadow-md'
-            : 'bg-gray-800 text-gray-300 hover:bg-red-700 hover:text-white'
-        }`}
-      >
-        {model}
-      </button>
-    ))}
-  </div>
-
-  {loading ? (
-    <p className="text-center text-gray-400 text-lg animate-pulse">Loading builds...</p>
-  ) : filtered.length === 0 ? (
-    <p className="text-center text-gray-400">No builds found for selected model.</p>
-  ) : (
-    <ul className="space-y-6">
-      {filtered.map((build, index) => (
-        <li
-          key={index}
-          className="bg-gradient-to-br from-black to-gray-900 border border-gray-800 p-6 rounded-lg shadow-xl"
-        >
-          <h3 className="text-xl font-bold text-white mb-2">{build.vehicleModel}</h3>
-          <p className="text-gray-300"><strong>Mods:</strong> {build.modifications}</p>
-          <p className="text-gray-300"><strong>Horsepower:</strong> {build.horsepower} whp</p>
-          <p className="text-green-400 font-semibold">
-            <strong>Price:</strong> ${Number(build.price).toLocaleString()}
-          </p>
-
-          <div className="mt-3 text-sm text-gray-400 italic">
-            <strong>Add-ons:</strong> {build.addOns || 'No additional upgrades'}
-          </div>
-
-          <div className="mt-4 text-sm text-white">
-            <strong>Build List:</strong>
-            {Array.isArray(build.modList) && build.modList.length > 0 ? (
-              <ul className="mt-2 space-y-1 list-disc list-inside">
-                {build.modList.map((mod, i) => (
-                  <li key={i} className="flex justify-between items-center text-sm">
-                    <span>{mod.name} (+{mod.hpGain} hp)</span>
-                    <button
-                      className="text-red-400 hover:text-red-600 text-xs ml-2"
-                      onClick={() => alert(`Remove ${mod.name} from build`)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-400">No mods in build list.</p>
-            )}
-          </div>
-
-          <div className="mt-2 text-sm text-green-400">
-            <strong>Total HP Gain:</strong>{' '}
-            {Array.isArray(build.modList)
-              ? build.modList.reduce((sum, mod) => sum + (mod.hpGain || 0), 0)
-              : 0} hp
-          </div>
-        </li>
-      ))}
-    </ul>
-  )}
-      <div className="text-center mt-12">
-        <Link
-          to="/build"
-          className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-md transition"
-        >
-          + Start New Build
-        </Link>
-      </div>
-    </div>
-  </div>
-);
+    </section>
+  );
 };
 
-// Prop validation for the props passed to this component
 GarageDashboard.propTypes = {
-savedBuilds: PropTypes.arrayOf(
-PropTypes.shape({
-  vehicleModel: PropTypes.string.isRequired,
-  modifications: PropTypes.string,
-  horsepower: PropTypes.number.isRequired,
-  price: PropTypes.number.isRequired,
-  addOns: PropTypes.string,
-  modList: PropTypes.array,
-})
-).isRequired,
+  savedBuilds: PropTypes.arrayOf(
+    PropTypes.shape({
+      vehicleModel: PropTypes.string.isRequired,
+      modifications: PropTypes.string,
+      horsepower: PropTypes.number.isRequired,
+      price: PropTypes.number.isRequired,
+      addOns: PropTypes.string,
+      modList: PropTypes.array,
+      createdAt: PropTypes.string,
+      _createdAt: PropTypes.string,
+      status: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 export default GarageDashboard;

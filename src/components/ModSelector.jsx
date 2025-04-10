@@ -22,7 +22,7 @@ const client = createClient({
 export default function ModSelector() {
   const [mods, setMods] = useState([]);
   const [selectedMods, setSelectedMods] = useState([]);
-  const [filter, setFilter] = useState<string>('All');
+  const [filter, setFilter] = useState('All');
 
   useEffect(() => {
     client
@@ -37,7 +37,8 @@ export default function ModSelector() {
           category->{title}
         }`
       )
-      .then(setMods);
+      .then(setMods)
+      .catch(console.error);
   }, []);
 
   const categories = ['All', ...new Set(mods.map((mod) => mod.category?.title || '').filter(Boolean))];
@@ -70,27 +71,27 @@ export default function ModSelector() {
 
     try {
       await client.create(buildData);
-      alert('Build saved successfully to your garage!');
+      alert('✅ Build saved to your garage!');
     } catch (err) {
-      console.error('Failed to save build:', err);
-      alert('An error occurred while saving the build.');
+      console.error('Save failed:', err);
+      alert('❌ An error occurred while saving.');
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto text-white px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Select Your Modifications</h1>
+    <div className="max-w-6xl mx-auto px-6 py-10 text-white">
+      <h1 className="text-3xl font-bold mb-6 font-borg text-accent">Select Your Mods</h1>
 
       {/* Category Filters */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-3 mb-8">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setFilter(cat)}
-            className={`px-4 py-1 rounded-full border font-bold transition-all duration-200 ${
+            className={`px-4 py-1.5 rounded-full font-cyber text-sm transition-all duration-150 border ${
               filter === cat
-                ? 'bg-red-600 text-white border-red-400'
-                : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
+                ? 'bg-accent text-black border-accent'
+                : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border-white/10'
             }`}
           >
             {cat}
@@ -99,32 +100,32 @@ export default function ModSelector() {
       </div>
 
       {/* Mod Grid */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-6">
         {filteredMods.map((mod) => {
           const isSelected = selectedMods.some((m) => m._id === mod._id);
           return (
             <div
               key={mod._id}
-              className={`p-4 border rounded-lg shadow-sm hover:shadow-lg transition-all ${
-                isSelected ? 'border-red-500 bg-gray-800/60' : 'bg-gray-900 hover:bg-gray-800'
+              className={`p-4 rounded-lg transition-all border shadow-lg backdrop-blur-md ${
+                isSelected ? 'bg-red-600/10 border-red-400' : 'bg-white/5 border-white/10 hover:bg-white/10'
               }`}
             >
-              <h3 className="text-lg font-semibold flex items-center gap-2">
+              <h3 className="text-lg font-bold flex items-center gap-2">
                 {mod.name}
-                <span title={mod.description} className="cursor-help text-blue-400">ℹ️</span>
+                <span title={mod.description} className="text-blue-400 cursor-help">ℹ️</span>
               </h3>
-              <p className="text-sm text-gray-400 mb-2">{mod.description}</p>
-              <p>💥 +{mod.hpGain} HP</p>
-              <p>💰 ${mod.price}</p>
+              <p className="text-sm text-gray-400 mt-1">{mod.description}</p>
+              <p className="mt-2 text-green-400 font-cyber">+{mod.hpGain} HP</p>
+              <p className="text-yellow-300 font-cyber">${mod.price}</p>
               <button
-                className={`mt-2 px-4 py-1 text-sm rounded font-semibold ${
-                  isSelected
-                    ? 'bg-red-700 text-white hover:bg-red-800'
-                    : 'bg-green-600 text-white hover:bg-green-700'
-                }`}
                 onClick={() => toggleMod(mod)}
+                className={`mt-3 px-4 py-1.5 rounded text-sm font-bold font-cyber transition duration-150 ${
+                  isSelected
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                }`}
               >
-                {isSelected ? 'Remove' : 'Add'}
+                {isSelected ? 'Remove Mod' : 'Add Mod'}
               </button>
             </div>
           );
@@ -132,33 +133,36 @@ export default function ModSelector() {
       </div>
 
       {/* Build Summary */}
-      <div className="mt-10 border-t pt-6">
-        <h2 className="text-xl font-semibold mb-2">Build Summary</h2>
+      <div className="mt-12 border-t border-white/10 pt-6">
+        <h2 className="text-xl font-bold mb-3 font-borg">Build Summary</h2>
         {selectedMods.length === 0 ? (
-          <p className="text-gray-400">No mods selected yet.</p>
+          <p className="text-gray-400 italic">No mods selected yet.</p>
         ) : (
           <>
-            <ul className="list-disc list-inside text-sm mb-2">
+            <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
               {selectedMods.map((mod) => (
                 <li key={mod._id}>
                   {mod.name} — +{mod.hpGain} HP — ${mod.price}
                 </li>
               ))}
             </ul>
-            <p className="mt-2 font-medium">
-              Total Gain: <span className="text-green-400">+{totalHp} HP</span> | Total: ${totalCost}
-            </p>
+            <div className="mt-4 font-cyber">
+              <p>Total Horsepower Gain: <span className="text-green-400 font-bold">+{totalHp} HP</span></p>
+              <p>Total Estimated Cost: <span className="text-yellow-400 font-bold">${totalCost}</span></p>
+            </div>
           </>
         )}
       </div>
 
       {selectedMods.length > 0 && (
-        <button
-          onClick={handleSaveBuild}
-          className="mt-4 px-6 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700"
-        >
-          Save This Build to My Garage
-        </button>
+        <div className="text-center mt-10">
+          <button
+            onClick={handleSaveBuild}
+            className="px-8 py-3 bg-accent text-black font-bold rounded-lg shadow hover:bg-red-500 transition-all duration-200"
+          >
+            💾 Save This Build to Garage
+          </button>
+        </div>
       )}
     </div>
   );

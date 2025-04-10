@@ -14,17 +14,32 @@ export default function HorsepowerSlider({ onHPChange }) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-6 w-full">
       <HPGauge horsepower={hp} />
-      <input
-        type="range"
-        min="600"
-        max="1500"
-        value={hp}
-        onChange={handleChange}
-        className="w-full accent-blue-500"
-      />
-      <p className="text-white text-sm">Selected Horsepower: {hp} whp</p>
+
+      <div className="w-full px-4 md:px-0 max-w-xl">
+        <label
+          htmlFor="hp-slider"
+          className="block text-center text-sm text-gray-400 font-cyber mb-2"
+        >
+          Adjust Horsepower Output
+        </label>
+        <input
+          id="hp-slider"
+          type="range"
+          min="600"
+          max="1500"
+          value={hp}
+          onChange={handleChange}
+          className="w-full accent-accent cursor-pointer transition-all duration-300"
+          aria-label="Horsepower range slider"
+        />
+        <div className="mt-3 text-center">
+          <span className="text-accent font-semibold text-lg font-cyber tracking-wide">
+            {hp} whp
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
