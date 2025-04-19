@@ -17,7 +17,7 @@ const GarageDashboard = ({ savedBuilds }) => {
     } else {
       setFiltered(safeBuilds.filter((b) => b.vehicleModel === selectedModel));
     }
-  }, [savedBuilds, selectedModel]);
+  }, [savedBuilds, selectedModel, safeBuilds]);
 
   const uniqueModels = ['All', ...new Set(safeBuilds.map((b) => b.vehicleModel))];
 

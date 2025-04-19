@@ -15,6 +15,7 @@ export default function BuildVisualizer({ vehicle }) {
         <div className="relative w-full max-w-5xl rounded-xl overflow-hidden shadow-2xl border border-white/20 bg-black/30 backdrop-blur-md">
           <iframe
             src={modelUrl}
+            title={`3D visualizer for ${vehicle || 'default vehicle'}`}
             frameBorder="0"
             width="100%"
             height="500px"

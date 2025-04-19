@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import sanity from '../lib/sanityClient'; // stays for future use (email filtering)
+// import sanity from '../lib/sanityClient'; // stays for future use (email filtering)
 import Button from './Button.jsx';
 import GaugeLoader from './GaugeLoader.jsx';
 
