@@ -1,10 +1,10 @@
 import SavedBuildCard from './SavedBuildCard';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const GarageDashboard = ({ savedBuilds }) => {
-  const safeBuilds = Array.isArray(savedBuilds) ? savedBuilds : [];
+  const safeBuilds = useMemo(() => Array.isArray(savedBuilds) ? savedBuilds : [], [savedBuilds]);
   const [filtered, setFiltered] = useState(safeBuilds);
   const [selectedModel, setSelectedModel] = useState('All');
   const [loading, setLoading] = useState(true);
