@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ModSelector from './ModSelector';
 import HPGauge from './HPGauge';
@@ -22,9 +22,7 @@ export default function DynamicVisualizerBuild() {
   const modelUrl = vehicleModels[selectedVehicle];
   const base = baseStats[selectedVehicle];
 
-  const totalHP = useMemo(() => {
-    return selectedMods.reduce((acc, mod) => acc + (mod.hp || 0), base.hp);
-  }, [selectedMods, base.hp]);
+  const totalHP = selectedMods.reduce((acc, mod) => acc + (mod.hp || 0), base.hp);
 
   return (
     <section className="w-full min-h-[600px] bg-gradient-to-b from-black to-gray-900 p-6 md:p-12 flex flex-col items-center justify-center text-white">
@@ -94,4 +92,3 @@ HPGauge.propTypes = {
   hp: PropTypes.number.isRequired,
   baseHp: PropTypes.number.isRequired,
 };
-
