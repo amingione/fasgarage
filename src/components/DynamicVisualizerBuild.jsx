@@ -26,10 +26,6 @@ export default function DynamicVisualizerBuild() {
     return selectedMods.reduce((acc, mod) => acc + (mod.hp || 0), base.hp);
   }, [selectedMods, base.hp]);
 
-  const totalCost = useMemo(() => {
-    return selectedMods.reduce((acc, mod) => acc + (mod.cost || 0), base.cost);
-  }, [selectedMods, base.cost]);
-
   return (
     <section className="w-full min-h-[600px] bg-gradient-to-b from-black to-gray-900 p-6 md:p-12 flex flex-col items-center justify-center text-white">
       <h2 className="text-3xl md:text-4xl font-bold font-borg text-accent mb-6 text-center drop-shadow">
